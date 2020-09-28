@@ -327,6 +327,139 @@ files:
         }
     }
   learner_created: false
+- name: src/banking/Account.java
+  visible: true
+  text: |
+    package banking;
+
+    import java.io.*;
+    import java.nio.file.Files;
+    import java.nio.file.Path;
+    import java.util.Random;
+
+    public class Account {
+
+
+        private static class Card {
+
+            String cardNumber = "400000";
+            String pinNumber;
+            File file = new File("account.txt");
+            //FileWriter writer = new FileWriter(file);
+
+            private Card() throws IOException {
+            }
+
+            public String generateAccount() {
+                Random random = new Random();
+                StringBuilder stringBulder = new StringBuilder();
+                for (int i = 0; i < 9; i++) {
+                    stringBulder.append(random.nextInt(10));
+                }
+                return String.valueOf(stringBulder);
+            }
+
+            public String generatePin() {
+                Random random = new Random();
+                StringBuilder stringBulder = new StringBuilder();
+                for (int i = 0; i < 4; i++) {
+                    stringBulder.append(random.nextInt(10));
+                }
+                return String.valueOf(stringBulder);
+            }
+
+            //String lastDigit = "0";
+            int sum = 0;
+
+            public String generateAccountLuhn(){
+                String account = generateAccount();
+                String[] accountString = account.split("");
+                int[] accountInt = new int[accountString.length];
+                for (int i = 0; i < accountString.length; i++) {
+                    accountInt[i] = Integer.parseInt(accountString[i]);
+                }
+                for (int i = 0; i < accountString.length; i+=2) {
+                    accountInt[i] = accountInt[i] * 2;
+                    if (accountInt[i] > 9) {
+                        accountInt[i] = accountInt[i] - 9;
+                    }
+                    sum += accountInt[i];
+                }
+                int lastDigit = 0;
+                while (sum % 10 != 0) {
+                    lastDigit = lastDigit + 1;
+                    sum = sum + lastDigit;
+                }
+                return account + lastDigit;
+
+            }
+
+            public void generateCard() throws IOException {
+                cardNumber = cardNumber + generateAccountLuhn();
+                pinNumber = generatePin();
+                System.out.printf("Your card has been created \nYour card number: \n%s \nYour card PIN: \n%s\n", cardNumber, pinNumber);
+
+                System.out.println();
+
+                //check if file empty and write in an account information, otherwise append
+                //BufferedReader br = new BufferedReader(new FileReader("account.txt"));
+
+
+                    double balance = 0;
+                    writeIntoFile(cardNumber, pinNumber, balance);
+
+            }
+
+            public void writeIntoFile(String cardNumber, String pinNumber, double balance) throws IOException {
+                FileWriter writer = new FileWriter(file, true);
+                try (PrintWriter printWriter = new PrintWriter(writer)) {
+                    BufferedReader br = new BufferedReader(new FileReader("account.txt"));
+                    if (br.readLine() == null) {
+                        printWriter.print(cardNumber + " ");
+                        printWriter.print(pinNumber + " ");
+                        printWriter.println(balance + "#");
+
+                    } else {
+                        CharSequence account = cardNumber + " " + pinNumber + " " + balance + "#" + "\n";
+                        printWriter.append(account);
+                        printWriter.flush();
+                    }
+                }
+            }
+        }
+            void displayCard() throws IOException {
+                Card newCard = new Card();
+                newCard.generateCard();
+            }
+    }
+  learner_created: true
+- name: src/banking/Menu.java
+  visible: true
+  text: |
+    package banking;
+
+    public class Menu {
+
+        public static void displayMenu() {
+            System.out.println("1. Create an account \n2. Log into account \n0. Exit");
+        }
+
+        public static void displayMenuAccount() {
+            System.out.println("1. Balance\n" +
+                    "2. Log out\n" +
+                    "0. Exit");
+        }
+
+
+    }
+  learner_created: true
+- name: account.txt
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/projects/93/stages/516/implement
-status: Unchecked
+status: Solved
+feedback:
+  message: Congratulations! Continue on <a href="https://hyperskill.org/projects/93/stages/516/implement">JetBrains
+    Academy</a>
+  time: Mon, 28 Sep 2020 03:06:48 UTC
 record: -1
