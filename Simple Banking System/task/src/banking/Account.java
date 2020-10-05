@@ -1,9 +1,15 @@
 package banking;
 
 import java.io.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Random;
 
 public class Account {
+
+
 
 
     private static class Card {
@@ -11,6 +17,7 @@ public class Account {
         String cardNumber = "400000";
         String pinNumber;
         File file = new File("account.txt");
+        int id = 0;
 
         private Card() throws IOException {
         }
@@ -34,6 +41,7 @@ public class Account {
         }
 
         public String generateAccountLuhn(){
+            id =id + 1;
             int sum = 0;
             String account = generateAccount();
             String[] accountString = account.split("");
@@ -78,7 +86,35 @@ public class Account {
             System.out.println();
                 double balance = 0;
                 writeIntoFile(cardNumber, pinNumber, balance);
+                insert(id, cardNumber, pinNumber, (int) balance);
 
+        }
+
+        public void insert(int id, String number, String pin, int balance) {
+            String sql = "INSERT INTO card(id,number,pin, balance) VALUES(?,?,?,?)";
+
+            try (Connection conn = this.connect();
+                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setInt(1, id);
+                pstmt.setString(2, number);
+                pstmt.setString(3, pin);
+                pstmt.setInt(4, balance);
+                pstmt.executeUpdate();
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
+        private Connection connect() {
+            // SQLite connection string
+            String url = "jdbc:sqlite:" + Main.fileName;
+            Connection conn = null;
+            try {
+                conn = DriverManager.getConnection(url);
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+            return conn;
         }
 
         public void writeIntoFile(String cardNumber, String pinNumber, double balance) throws IOException {

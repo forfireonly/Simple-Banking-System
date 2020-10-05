@@ -168,6 +168,8 @@ topics:
     theory_id: 4311
   - title: Command-line arguments
     theory_id: 3566
+  - title: IntelliJ Run Configurations
+    theory_id: 10630
   - title: Gradle basics
     theory_id: 5075
   - title: Basic project with Gradle

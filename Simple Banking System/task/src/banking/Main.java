@@ -1,6 +1,7 @@
 package banking;
 
 import java.io.*;
+import java.sql.*;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -8,6 +9,8 @@ public class Main {
 
     Scanner scn = new Scanner(System.in);
     BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
+    static String fileName = "";
 
     public void interactUserAccount() throws IOException {
         System.out.println();
@@ -121,10 +124,47 @@ public class Main {
     }
 
 
+    public static void createNewDatabase(String fileName) {
+
+        String url = "jdbc:sqlite:" + fileName;
+
+        String sql = "CREATE TABLE IF NOT EXISTS card (\n"
+                + "	id INTEGER,\n"
+                + "	number TEXT,\n"
+                + "	pin TEXT,\n"
+                + "	balance INTEGER DEFAULT 0\n"
+                + ");";
+
+        try (Connection conn = DriverManager.getConnection(url);
+             Statement stmt = conn.createStatement()) {
+            // create a new table
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+       /* try (Connection conn = DriverManager.getConnection(url)) {
+            if (conn != null) {
+
+                DatabaseMetaData meta = conn.getMetaData();
+                System.out.println("The driver name is " + meta.getDriverName());
+                System.out.println("A new database has been created.");
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }*/
+    }
+
+
 
 
     public static void main(String[] args) throws IOException {
+
+        if (args.length > 0 && args[0].equals("-fileName")) {
+            fileName = args[1];
+        }
         Main bankingSystem = new Main();
         bankingSystem.interactWithUser();
+        createNewDatabase(fileName);
     }
 }
