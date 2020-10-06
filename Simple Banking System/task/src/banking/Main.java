@@ -12,6 +12,43 @@ public class Main {
 
     static String fileName = "";
 
+    private Connection connect() {
+        // SQLite connection string
+        String url = "jdbc:sqlite:" + fileName;
+        Connection conn = null;
+        try {
+            conn = DriverManager.getConnection(url);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return conn;
+    }
+
+    public boolean selectAll(String cardNumberEntered, String pinNumberEntered){
+        String sql = "SELECT number, pin FROM card";
+        boolean isExist = false;
+
+        try (Connection conn = this.connect();
+             Statement stmt  = conn.createStatement();
+             ResultSet rs    = stmt.executeQuery(sql)){
+
+            // loop through the result set
+            while (rs.next()) {
+                if (rs.getString("number").equals(cardNumberEntered) &&
+                        rs.getString("pin").equals(pinNumberEntered)) {
+                    System.out.println();
+                    System.out.println("You have successfully logged in!");
+                    System.out.println();
+                    isExist = true;
+                }
+
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return isExist;
+    }
+
     public void interactUserAccount() throws IOException {
         System.out.println();
         System.out.println("Enter your card number:");
@@ -28,8 +65,9 @@ public class Main {
         boolean isAccount = false;
         int userChoice = 0;
 
+        isAccount = selectAll(cardNumberEntered, pinNumberEntered);
 
-        for (String each : accounts ) {
+        /*for (String each : accounts ) {
             String[] separateAccounts = each.split(" ");
             if (separateAccounts[0].equals(cardNumberEntered) && separateAccounts[1].equals(pinNumberEntered)) {
                 System.out.println();
@@ -39,7 +77,7 @@ public class Main {
                 isAccount = true;
                 break;
             }
-        }
+        }*/
         if (isAccount) {
 
             Menu.displayMenuAccount();
@@ -163,8 +201,9 @@ public class Main {
         if (args.length > 0 && args[0].equals("-fileName")) {
             fileName = args[1];
         }
+        createNewDatabase(fileName);
         Main bankingSystem = new Main();
         bankingSystem.interactWithUser();
-        createNewDatabase(fileName);
+
     }
 }
