@@ -183,3 +183,5 @@ topics:
     theory_id: 8627
   - title: Basic DELETE statement
     theory_id: 9075
+  - title: Updating selected rows
+    theory_id: 9603
