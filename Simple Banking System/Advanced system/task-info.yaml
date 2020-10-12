@@ -300,14 +300,14 @@ files:
                     .addInput(out -> {
                         int userBalance = getBalance(correctCardNumber);
                         if (userBalance != 10000) {
-                            System.out.println("Account balance is wrong after adding income.\nExpected 10000");
+                            return CheckResult.wrong("Account balance is wrong after adding income.\nExpected 10000");
                         }
                         return "2\n15000";
                     })
                     .addInput(out -> {
                         int userBalance = getBalance(correctCardNumber);
                         if (userBalance != 25000) {
-                            System.out.println("Account balance is wrong after adding income.\nExpected 25000");
+                            return CheckResult.wrong("Account balance is wrong after adding income.\nExpected 25000");
                         }
                         isCompleted = true;
                         return "0";
@@ -356,7 +356,7 @@ files:
                             return new CheckResult(false, "You should not allow to transfer " +
                                 "to a card number that doesn't pass the Luhn algorithm.");
                         }
-                        return notExistingCardNumber;
+                        return "3\n" + notExistingCardNumber;
                     })
                     .addInput(out -> {
                         if (!out.contains("exist")) {
@@ -372,13 +372,14 @@ files:
                         }
                         isCompleted = true;
                         return "2\n20000\n3\n" + toTransferCardNumber + "\n10000\n0";
-                    }).setCheckFunc(SimpleBankSystemTest::checkTransfer)
+                    }).setCheckFunc(SimpleBankSystemTest::checkTransfer),
+                new TestCase<String>()
                     //Check Close Account
                     .addArguments("-fileName", databaseFileName)
                     .setInput("1")
                     .addInput(output -> {
 
-                        String out = output.toString().trim().toLowerCase();
+                        String out = output.trim().toLowerCase();
 
                         Pattern cardNumberPattern = Pattern.compile("400000\\d{10}");
                         Matcher cardNumberMatcher = cardNumberPattern.matcher(out);
@@ -395,8 +396,6 @@ files:
                         isCompleted = true;
                         return "2\n" + correctCardNumber + "\n" + correctPin + "\n4\n0";
                     }).setCheckFunc(SimpleBankSystemTest::checkClose)
-
-
             );
         }
 
@@ -863,6 +862,9 @@ files:
 
     }
   learner_created: true
+- name: src/banking/DataBaseWorker.java
+  visible: true
+  learner_created: true
 - name: card.s3db
   visible: true
   learner_created: true
@@ -870,17 +872,9 @@ files:
   visible: true
   learner_created: true
 feedback_link: https://hyperskill.org/projects/93/stages/518/implement
-status: Failed
+status: Solved
 feedback:
-  message: "Wrong answer in test #11\n\nAfter closing the account, the card should\
-    \ be deleted from the database.\n\nPlease find below the output of your program\
-    \ during this failed test.\nNote that the &#39;&gt;&#39; character indicates the\
-    \ beginning of the input line.\n\n---\n\nArguments: -fileName card.s3db -fileName\
-    \ card.s3db\n\n\n1. Create an account \n2. Log into account \n0. Exit\n&gt; 1\n\
-    \nYour card has been created \nYour card number: \n4000008136017634 \nYour card\
-    \ PIN: \n4127\n\n1. Create an account \n2. Log into account \n0. Exit\n&gt; 2\n\
-    \nEnter your card number:\n&gt; 4000008136017634\nEnter your PIN:\n&gt; 4127\n\
-    \nYou have successfully logged in!\n\n1. Balance\n2. Log out\n0. Exit\n&gt; 4\n\
-    &gt; 0\n\nBye!"
-  time: Tue, 06 Oct 2020 13:52:54 UTC
+  message: Congratulations! Continue on <a href="https://hyperskill.org/projects/93/stages/518/implement">JetBrains
+    Academy</a>
+  time: Mon, 12 Oct 2020 00:48:02 UTC
 record: 4
